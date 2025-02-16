@@ -16,7 +16,7 @@ app.listen(5000);
 console.log("Servidor corriendo exitosamente en el puerto 5000")
 
 //Base de Datos
-const db_name=path.join(__dirname,"db","base.db");
+const db_name=path.join(__dirname,"","base.db");
 const db=new sqlite3.Database(db_name, err =>{ 
 if (err){
 	return console.error(err.message);

@@ -1,0 +1,36 @@
+<%- include('header') -%>
+
+
+
+<div class="container">
+    <a class="btn btn-sm btn-success mb-3 mt-3" href="/crear">Añadir Producto</a>
+    <h1>Lista de Productos</h1>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Existencia</th>
+                <th>Precio ($)</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+                <% for (const Productos of modelo) { %>
+                <tr> 
+                    <td><%= Productos.codigo%></td>
+                    <td><%= Productos.producto%></td>
+                    <td><%= Productos.categoria_id%></td>
+                    <td><%= Productos.existencia_actual%></td>
+                    <td><%= Productos.precio%></td>
+                    <td class="fijo">
+                    <a class="btn btn-sm btn-warning" href="/editar/<%=Productos.id %>">EDITAR</a>
+                    <a class="btn btn-sm btn-danger" href="/eliminar/<%=Productos.id %>">ELIMINAR</a>
+                    </td>
+                    
+                </tr>
+                <% } %>
+        </tbody>
+    </table>
+</div>

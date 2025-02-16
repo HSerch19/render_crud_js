@@ -1,0 +1,37 @@
+            <div class="container mb-3">
+                <label for="" class="form-label">Nombre del Producto</label>
+                <input type="text" name="producto" id="" value="<%= modelo.producto%>" class="form-control" required>
+            </div>
+
+            <div class="container mb-3">
+                <label for="" class="form-label">Codigo del Producto</label>
+                <input type="number" name="codigo" id="codigo" value="<%= modelo.codigo%>" class="form-control" required>
+            </div>
+
+            <div class="container mb-3">
+                <label for="" class="form-label">Categoria del Producto</label>
+                <select name="categoria_id" id="categoria_id" value="<%= modelo.categoria_id%>" class="form-select" required>
+                    <option value="1">Ropa</option>
+                    <option value="2">Accesorio</option>
+                    <option value="3">Recursos</option>
+                </select>
+            </div>
+
+            <div class="container mb-3">
+                <label for="" class="form-label">Existencia Actual</label>
+                <select name="existencia_actual" id="" value="<%= modelo.existencia_actual%>" class="form-select" required>
+                    <option value="Disponible">Disponible</option>
+                    <option value="Agotado">Agotado</option>
+                </select>
+            </div>
+
+            <div class="container mb-3">
+                <label for="" class="form-label">Precio del Producto ($)</label>
+                <input type="number" name="precio" id="precio" value="<%= modelo.precio%>" class="form-control" required>
+            </div>
+
+            <div class="container d-grid gap-2 col-6 mx-auto mb-3">
+                <input type="submit" value="GUARDAR PRODUCTO" class="btn btn-primary">
+                <a class="btn btn-outline-dark cancel" href="/productos">Cancelar</a>
+            </div>
+

@@ -73,7 +73,7 @@ app.get('/productos',(req,res)=>{
 			if (err){
 				return console.error(err.message);
 			}else{
-			res.render("Productos.ejs",{modelo:rows});
+			res.render("productos.ejs",{modelo:rows});
 			}
 	})
 })
@@ -86,7 +86,7 @@ app.get('/categorias',(req,res)=>{
 		if (err){
 			return console.error(err.message);
 		}else{
-		res.render("Categorias.ejs",{modelo:rows});
+		res.render("categorias.ejs",{modelo:rows});
 		}
 	})
 })

@@ -26,17 +26,46 @@ if (err){
 })
 
 //Crear la tablas
-const sql_create_table_categoria="CREATE TABLE IF NOT EXISTS Categorias (id INTEGER PRIMARY KEY AUTOINCREMENT,categoria TEXT)";
+const sql_create_table_categoria = "CREATE TABLE IF NOT EXISTS Categorias (id INTEGER PRIMARY KEY AUTOINCREMENT, categoria TEXT UNIQUE)"; // Añadimos UNIQUE a categoria
 
-const sql_create_table_producto="CREATE TABLE IF NOT EXISTS Productos (id INTEGER PRIMARY KEY AUTOINCREMENT,codigo INTEGER,producto TEXT,categoria_id INTEGER,existencia_actual TEXT,precio REAL,FOREIGN KEY(categoria_id) REFERENCES categorias(id))";
+const sql_create_table_producto = "CREATE TABLE IF NOT EXISTS Productos (id INTEGER PRIMARY KEY AUTOINCREMENT, codigo INTEGER, producto TEXT, categoria_id INTEGER, existencia_actual TEXT, precio REAL, FOREIGN KEY(categoria_id) REFERENCES categorias(id))";
 
-db.run(sql_create_table_categoria,err=>{
-	if (err){
-	return console.error(err.message);
-}else{
+db.run(sql_create_table_categoria, err => {
+    if (err) {
+        return console.error(err.message);
+    } else {
+        const sql_create_categorias_1 = "INSERT OR IGNORE INTO Categorias (categoria) VALUES('Ropa')"; // Usamos INSERT OR IGNORE
+        const sql_create_categorias_2 = "INSERT OR IGNORE INTO Categorias (categoria) VALUES('Accesorios')"; // Usamos INSERT OR IGNORE
+        const sql_create_categorias_3 = "INSERT OR IGNORE INTO Categorias (categoria) VALUES('Recursos')"; // Usamos INSERT OR IGNORE
+
+        db.run(sql_create_categorias_1, err => {
+            if (err) {
+                return console.error(err.message);
+            } else {
+                console.log("Tabla Categorias fue llenada exitosamente, Ropa");
+            }
+        });
+
+        db.run(sql_create_categorias_2, err => {
+            if (err) {
+                return console.error(err.message);
+            } else {
+                console.log("Tabla Categorias fue llenada exitosamente, Accesorios");
+            }
+        });
+
+        db.run(sql_create_categorias_3, err => {
+            if (err) {
+                return console.error(err.message);
+            } else {
+                console.log("Tabla Categorias fue llenada exitosamente, Recursos");
+            }
+        });
+    }
 	console.log("Tabla Productos anexada correctamente");
-}
-})
+});
+	
+
 
 db.run(sql_create_table_producto,err=>{
 	if (err){
@@ -46,47 +75,66 @@ db.run(sql_create_table_producto,err=>{
 }
 })
 
-//Creacion de Categorias
-const sql_create_categorias="INSERT INTO Categorias (categoria) VALUES('Ropa'); INSERT INTO Categorias (categoria) VALUES('Accesorios'); INSERT INTO Categorias (categoria) VALUES('Recursos');";
-
-db.run(sql_create_categorias,err=>{
-	if (err){
-	return console.error(err.message);
-}else{
-	console.log("Tabla Categorias fue llenada exitosamente");
-}
-})
 
 //Enrutamiento
 app.get('/',(req,res)=>{
-	res.render('index.ejs')
-})
-
-app.get('/catalogo',(req,res)=>{
-	res.render('index.ejs')
-})
-
-//Mostrar tabla de Productos
-app.get('/productos',(req,res)=>{
-	const sql="SELECT * FROM Productos ORDER BY codigo";
+	const sql="SELECT * FROM Productos ORDER BY id";
 	db.all(sql, [],(err, rows)=>{
-			if (err){
-				return console.error(err.message);
-			}else{
-			res.render("productos.ejs",{modelo:rows});
-			}
+	if (err){
+		return console.error(err.message);
+	}else{
+		res.render("catalogo.ejs",{modelo:rows});
+	}
 	})
 })
 
 
+
+
+app.get('/catalogo',(req,res)=>{
+	const sql="SELECT * FROM Productos ORDER BY id";
+	db.all(sql, [],(err, rows)=>{
+	if (err){
+		return console.error(err.message);
+	}else{
+		res.render("catalogo.ejs",{modelo:rows});
+	}
+	})
+})
+
+//Mostrar tabla de Productos
+app.get('/productos', (req, res) => {
+    const sql = "SELECT * FROM Productos ORDER BY codigo";
+
+    db.all(sql, [], (err, productos) => {
+        if (err) {
+            return console.error(err.message);
+        }
+
+        db.all('SELECT * FROM Categorias', [], (err, categorias) => {
+            if (err) {
+                return console.error(err.message);
+            }
+
+            const categoriasMap = new Map();
+            categorias.forEach(categoria => {
+                categoriasMap.set(categoria.id, categoria.categoria);
+            });
+
+            res.render("productos.ejs", { modelo: productos, categoriasMap: categoriasMap });
+        });
+    });
+});
+
+
 //mostrar tabla de Categorias
 app.get('/categorias',(req,res)=>{
-	const sql="SELECT c.id, c.categoria, COUNT(p.id) AS cantidad_productos FROM Categorias AS c LEFT JOIN Productos AS p ON c.id = p.categoria_id GROUP BY c.id, c.categoria";
-	db.all(sql, [],(err, rows)=>{
+		const sql="SELECT * FROM Categorias ORDER BY id";
+		db.all(sql, [],(err, rows)=>{
 		if (err){
 			return console.error(err.message);
 		}else{
-		res.render("categorias.ejs",{modelo:rows});
+			res.render("categorias.ejs",{modelo:rows});
 		}
 	})
 })
@@ -113,3 +161,78 @@ app.post('/crear',(req,res)=>{
 		}
 	})
 });
+
+//Editar Registros
+
+//GET /edit/id
+app.get("/editar/:id",(req, res)=>{
+	const id=req.params.id;
+	const sql="SELECT * FROM Productos WHERE id=?";
+	db.get(sql,id,(err, rows)=>{
+		res.render("editar.ejs",{modelo: rows})
+	})
+})
+
+//POST /edit/id
+app.post("/editar/:id",(req, res)=>{
+
+	const id=req.params.id;
+	const info_producto=[req.body.producto, req.body.codigo, req.body.categoria_id, req.body.existencia_actual, req.body.precio, id];
+	const sql_actualizar="UPDATE Productos SET producto=?, codigo=? ,categoria_id=?, existencia_actual=?, precio=? WHERE (id=?)";
+
+
+	db.run(sql_actualizar, info_producto, err =>{
+			if (err){
+				return console.error(err.message);
+			}
+			else{
+					res.redirect("/productos");
+		}
+	});
+})
+
+
+
+// Eliminar Registros
+
+//GET /eliminar/id
+app.get("/eliminar/:id",(req, res)=>{
+	const id=req.params.id;
+	const sql="SELECT * FROM Productos WHERE id=?";
+	db.get(sql,id,(err, rows)=>{
+		res.render("eliminar.ejs",{modelo: rows})
+	})
+})
+
+
+
+//POST /eliminar/id
+app.post("/eliminar/:id",(req, res)=>{
+
+	const id=req.params.id;
+	const sql="DELETE FROM Productos WHERE id=?";
+
+	db.run(sql, id, err =>{
+			if (err){
+				return console.error(err.message);
+			}
+			else{
+					res.redirect("/productos");
+		}
+	});
+})
+
+//Compra de producto
+
+app.get("/comprar/:id",(req, res)=>{
+	const id=req.params.id;
+	const sql="SELECT * FROM Productos WHERE id=?";
+	db.get(sql,id,(err, rows)=>{
+		res.render("comprar.ejs",{modelo: rows})
+	})
+})
+
+
+app.post('/comprar/:id',(req,res)=>{
+	res.render('comprarCentral.ejs')
+})

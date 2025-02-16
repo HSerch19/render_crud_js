@@ -1,54 +1,20 @@
 <%- include('header') -%>
 
-
-<div class="container mb-3 mt-3">
-    
-    <button class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-        Agregar nueva Categoria
-    </button>
-
-    <div class="collapse mb-3" id="collapseExample">
-        <form action="categorias_insertar.php" method="POST" class="form-control">
-            <div class="container mb-3">
-                <label for="" class="form-label">Nombre de la categoria</label>
-                <input type="text" name="nombre_categoria" id="" class="form-control" required>
-            </div>
-
-
-            <div class="container d-grid gap-2 col-6 mx-auto mb-3">
-                <input type="submit" value="GUARDAR CATEGORIA" class="btn btn-primary">
-            </div>
-
-        </form>
-    </div>
-
-</div>
-
-<div class="container">
+<div class="container mt-5">
     <h1>Lista de Categorias</h1>
     <table class="table table-bordered table-hover">
         <thead>
             <tr>
-                <th>Categoría</th>
-                <th>Cantidad de Productos de esta categoria</th>
-                <th>Acciones</th>
-                <th>acciones</th>
+                <th>ID</th>
+                <th>Nombre Categoria</th>
             </tr>
         </thead>
         <tbody>
                 <% for (const Categorias of modelo) { %>
                 <tr> 
+                    <td><%= Categorias.id %></td>
                     <td><%= Categorias.categoria %></td>
-                    <td><%= Categorias.cantidad_productos %></td>
-                    <td class="fijo">
-                    <a class="btn btn-sm btn-warning" href="/editar/<%=producto.Producto_ID %>"><img src="img/edit.png" class="icono" /> </a>
-                    </td>
-                    
-                    <td class="fijo">
-                    <a class="btn btn-sm btn-danger" href="/eliminar/<%=producto.Producto_ID %>"><img src="img/delete.png" class="icono" /> </a>
-                    </td>
                     </tr>
-            
             <% } %>
         </tbody>
     </table>
